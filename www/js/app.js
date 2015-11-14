@@ -1,4 +1,4 @@
-angular.module('pioupiou', ['ionic','ionic.service.core', 'pioupiou.controllers', 'pioupiou.filters', 'pioupiou.services', 'pioupiou.directives'])
+angular.module('pioupiou', ['ionic', 'pioupiou.controllers', 'pioupiou.filters', 'pioupiou.services', 'pioupiou.directives'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
