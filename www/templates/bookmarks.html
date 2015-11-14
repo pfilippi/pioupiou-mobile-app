@@ -1,0 +1,12 @@
+<ion-view view-title="Favoris">
+	<ion-content>
+		<ion-list>
+			<ion-item class="item item-icon-right" 
+				  ng-repeat="(id, name) in bookmarks.bookmarks"
+				  href="#/app/pioupiou/{{id}}">
+				{{name}}
+				<a class="icon ion-close" ng-click="bookmarks.remove(id)"></a>
+			</ion-item>
+		</ion-list>
+	</ion-content>
+</ion-view>

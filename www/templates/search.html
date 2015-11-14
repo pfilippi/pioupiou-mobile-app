@@ -1,0 +1,24 @@
+<ion-view view-title="Recherche">
+  <ion-content>
+    <div class="list list-inset">
+	  <label class="item item-input">
+	    <i class="icon ion-search placeholder-icon"></i>
+	    <input type="text" placeholder="Ex : 287, Saint-Hilaire"
+			   ng-model="search.str">
+	  </label>
+	</div>
+	<div class="card" ng-if="pioupious.error">	  
+	  	<div class="item item-text-wrap assertive">
+	    	Pas de données disponibles
+	  	</div>
+	</div>
+	<ion-list ng-if="search.str.length >= 2">
+		<ion-item class="item item-icon-right" 
+				  ng-repeat="item in pioupious.data | filter : doSearch"
+				  href="#/app/pioupiou/{{item.id}}">
+				{{item.meta.name}}
+				<i class="icon ion-star" ng-if="bookmarks.bookmarks[item.id]"></i>
+		</ion-item>
+	</ion-list>
+  </ion-content>
+</ion-view>
