@@ -1,47 +1,56 @@
 angular.module('pioupiou.services', [])
 
-.factory('dataFetcher', ['$http', '$timeout', function($http, $timeout) {
+.factory('resource', ['$http', '$timeout', function($http, $timeout) {
 	
 	return function(url){
+
+		var timeout;
 		
-		var fetcher = {
+		var resource = {
 			error: false,
-			data : null
+			data : null,
+			pollCancel : function(){
+				$timeout.cancel(timeout);
+			},
+			pollStart : function(delay){
+				return $http({
+					method : 'GET',
+					url : url
+				}).then(
+					function(response){
+						resource.error = false;
+						resource.data = response.data.data;
+						timeout = $timeout(function(){resource.pollStart(delay)}, delay);
+					},
+					function(error){
+						resource.error = true;
+						timeout = $timeout(function(){resource.pollStart(1000)}, 1000);
+					}
+				);
+			}
 		};
-
-		function getData(){
-			$http({
-				method : 'GET',
-				url : url
-			}).then(
-				function(response){
-					fetcher.error = false;
-					fetcher.data = response.data.data;
-					$timeout(getData, 5000);
-				},
-				function(error){
-					fetcher.error = true;
-					$timeout(getData, 1000);
-				}
-			);
-		}
-
-		getData();
 			
-		return fetcher;
+		return resource;
 	}
 }])
 
-.factory('pioupiou', ['dataFetcher', function(dataFetcher) {
+.factory('pioupiou', ['resource', function(resource) {
 	
 	return function(pioupiou_id){
-		return dataFetcher('http://api.pioupiou.fr/v1/live/' + pioupiou_id);
+		return resource('http://api.pioupiou.fr/v1/live/' + pioupiou_id);
 	};
 }])
 
-.factory('pioupious', ['dataFetcher', function(dataFetcher) {
+.factory('pioupiouLastHour', ['resource', function(resource) {
 	
-	return dataFetcher('http://api.pioupiou.fr/v1/live/all');
+	return function(pioupiou_id){
+		return resource('http://api.pioupiou.fr/v1/archive/' + pioupiou_id + '?start=last-hour&stop=now');
+	};
+}])
+
+.factory('pioupious', ['resource', function(resource) {
+	
+	return resource('http://api.pioupiou.fr/v1/live/all');
 }])
 
 .factory('bookmarks', [function() {

@@ -1,44 +1,63 @@
 <ion-view>
 	<ion-content class="padding">
-		<div class="card" ng-if="pioupiou.error && !pioupiou.data">	  
+		<div class="card" 
+			 ng-if="pioupiou.error && !pioupiou.data">	  
 		  	<div class="item item-text-wrap assertive">
 		    	Pas de données disponibles
 		  	</div>
 		</div>
 		<div ng-if="pioupiou.data">
-			<div class="list card" style="margin-top:0px;margin-bottom:0px;">
+			<div class="list card">
 			  	<div class="item item-avatar">
 			    	<img src="img/logo.png">
 			    	<h2>{{pioupiou.data.meta.name}}</h2>
 			    	<p>n° {{pioupiou.data.id}}</p>
-					<p ng-class="{'balanced' : pioupiou.data.status.state == 'on', 'assertive' : pioupiou.data.status.state == 'off'}">
-						<span ng-if="pioupiou.data.status.state == 'on'" class="balanced">En ligne</span>
-						<span ng-if="pioupiou.data.status.state == 'off'" class="assertive">Hors ligne</span>	
-						à {{pioupiou.data.measurements.date | date:'shortTime'}}</i>
+					<p>
+						<span ng-if="pioupiou.data.status.state == 'on'" 
+							  class="balanced">
+							En ligne
+						</span>
+						<span ng-if="pioupiou.data.status.state == 'off'" 
+							  class="assertive">
+							Hors ligne
+						</span>	
+						à {{pioupiou.data.measurements.date | date:'shortTime'}}
 					</p>
 			  	</div>
-				<div class="text-center" ng-if="pioupiou.data.measurements.wind_speed_avg !== null">
-					<img src="img/arrow.png" width="130" height="129" alt="Arrow" style="transform: rotate({{pioupiou.data.measurements.wind_heading}}deg); -webkit-transform: rotate({{pioupiou.data.measurements.wind_heading}}deg); margin:30px">
-					<div id="name" ng-click="toggleSpeedUnit()">
-						<h3>{{pioupiou.data.measurements.wind_heading | windDirectionDegreesToText}} - {{convertSpeed(pioupiou.data.measurements.wind_speed_avg) | number:0}} {{speed_unit}}</h3>
-						<h4>Mini : {{convertSpeed(pioupiou.data.measurements.wind_speed_min) | number:0}} {{speed_unit}} - Maxi {{convertSpeed(pioupiou.data.measurements.wind_speed_max) | number:0}} {{speed_unit}}</h4>
+				<div class="text-center" 
+					 ng-if="last_hour.data">
+					<img src="img/arrow.png" 
+						 width="130" 
+						 height="129" 
+						 alt="Arrow" 
+						 style="transform: rotate({getCurrentMeasurement()[6]}}deg); -webkit-transform: rotate({{getCurrentMeasurement()[6]}}deg); margin:30px">
+					<div id="name" 
+						 ng-click="toggleSpeedUnit()">
+						<h3>
+							{{getCurrentMeasurement()[6] | windDirectionDegreesToText}} - {{convertSpeed(getCurrentMeasurement()[4]) | number:0}} {{speed_unit}}
+						</h3>
+						<h4>
+							Mini : {{convertSpeed(getCurrentMeasurement()[3]) | number:0}} {{speed_unit}} - Maxi {{convertSpeed(getCurrentMeasurement()[5]) | number:0}} {{speed_unit}}
+						</h4>
+						<p>Relevé de {{getCurrentMeasurement()[0] | date:'shortTime'}}</p>
 					</div>
-					<div class="range range-positive">	
-						<input type="range" min="0" max="100" step="25" list="steplist" disabled="disabled">
-						<datalist id="steplist row">
-				    		<option>0</option>
-				    		<option>25</option>
-				    		<option>50</option>
-				    		<option>75</option>
-				    		<option>100</option>
-						</datalist>
+					<div class="range range-positive">
+						<input type="range" 
+							   min="0" 
+							   max="{{last_hour.data.length - 1}}" 
+							   step="1" 
+							   ng-model="selected_measurement.index" 
+							   on-release="resetSelectedMeasurement()">
 					</div>
 				</div>
+				
 				<div class="item item-text-wrap">
-				<span ng-if="pioupiou.data.description">{{pioupiou.data.description}}</span>
-				<span ng-if="!pioupiou.data.description">
-					Ce pioupiou n'a pas encore de description.
-				</span>					
+					<span ng-if="pioupiou.data.description">
+						{{pioupiou.data.description}}
+					</span>
+					<span ng-if="!pioupiou.data.description">
+						Ce pioupiou n'a pas encore de description.
+					</span>					
 			  </div>
 			</div>
 			
