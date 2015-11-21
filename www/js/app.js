@@ -1,4 +1,4 @@
-angular.module('pioupiou', ['ionic', 'pioupiou.controllers', 'pioupiou.filters', 'pioupiou.services', 'pioupiou.directives'])
+angular.module('pioupiou', ['ionic', 'pioupiou.controllers', 'pioupiou.filters', 'pioupiou.services', 'pioupiou.directives', 'leaflet-directive', 'geolocation'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -54,7 +54,15 @@ angular.module('pioupiou', ['ionic', 'pioupiou.controllers', 'pioupiou.filters',
 			  	templateUrl: 'templates/bookmarks.html'
 				}
 			}
-		});
+		}).state('app.map', {
+      url: '/map',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/map.html',
+          controller: 'mapCtrl'
+        }
+      }
+    });
 
   $urlRouterProvider.otherwise('/app/home');
 });

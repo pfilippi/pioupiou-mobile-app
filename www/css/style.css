@@ -1,1 +1,9 @@
 /* Empty. Add your own CSS if you like */
+
+#map-view .scroll{
+	height:100%;
+}
+#map{
+	height:100%;
+	width:100%;
+}

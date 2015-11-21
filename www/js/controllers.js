@@ -26,8 +26,8 @@ angular.module('pioupiou.controllers', [])
 	$scope.doSearch = function(item){
 		return (item.meta.name.indexOf($scope.search.str) >= 0) || (item.id == $scope.search.str);
 	};
-}]).
-controller('pioupiouCtrl', 
+}])
+.controller('pioupiouCtrl', 
 		   ['$scope', '$stateParams', 'pioupiou', 'pioupiouLastHour',  '$timeout',
 		   function($scope, $stateParams, pioupiou, pioupiouLastHour, $timeout) {
 	
@@ -53,11 +53,37 @@ controller('pioupiouCtrl',
 
 	$scope.getCurrentMeasurement = function(){
 		return $scope.last_hour.data[$scope.selected_measurement.index];
-	}
+	};
 
 	$scope.$on('$destroy', function(){
 		$scope.pioupiou.pollCancel();
 		$scope.last_hour.pollCancel();
 	});
 	
+}]).controller('mapCtrl', ['$scope', 'pioupious', 'geolocation', function($scope, pioupious, geolocation) {
+
+	$scope.tiles = {
+		url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    };
+
+	$scope.center = {
+        lat: 46.227638,
+        lng: 2.213749, //center of France
+        zoom: 5
+    };
+
+	geolocation.getLocation().then(function(data){
+		$scope.center.lat = data.coords.latitude;
+		$scope.center.lng = data.coords.longitude;
+		$scope.center.zoom = 9;
+    });
+
+    $scope.defaults = {
+    	zoomControl : false
+    };
+
+   	pioupious.pollStart(10000).then(function(){
+		$scope.markers = pioupious.data;
+	});
+
 }]);
