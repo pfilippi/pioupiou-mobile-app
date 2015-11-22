@@ -1,4 +1,4 @@
-angular.module('pioupiou.directives', [])
+angular.module('pioupiou.directives', ['leaflet-directive'])
 
 .directive('pioupiouClusteredMarkers', ['leafletData', '$parse', function(leafletData, $parse) {
 	return {

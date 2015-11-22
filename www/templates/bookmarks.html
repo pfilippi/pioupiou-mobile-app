@@ -2,10 +2,23 @@
 	<ion-content>
 		<ion-list>
 			<ion-item class="item item-icon-right" 
-				  ng-repeat="(id, name) in bookmarks.bookmarks"
-				  href="#/app/pioupiou/{{id}}">
-				{{name}}
-				<a class="icon ion-close" ng-click="bookmarks.remove(id)"></a>
+				  	  ng-repeat="pioupiou in pioupious.data"
+				  	  ng-if="bookmarks.bookmarks[pioupiou.id]"
+				  	  href="#/app/pioupiou/{{pioupiou.id}}">
+
+				<h2>{{pioupiou.meta.name}}</h2>
+				<p>
+					<span ng-show="pioupiou.status.state == 'on'"
+						  class="balanced">
+						En ligne
+					</span>
+					<span ng-show="pioupiou.status.state == 'off'"
+						  class="assertive">
+						Hors ligne
+					</span> - 
+					{{pioupiou.measurements.wind_heading | windDirectionDegreesToText}} - {{convertSpeed(pioupiou.measurements.wind_speed_avg) | number:0}} {{speed_unit}}
+				</p>
+				<a class="icon ion-close" ng-click="bookmarks.remove(pioupiou.id)"></a>
 			</ion-item>
 		</ion-list>
 	</ion-content>
