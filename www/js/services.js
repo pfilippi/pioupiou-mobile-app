@@ -5,6 +5,7 @@ angular.module('pioupiou.services', [])
 	return function(url){
 
 		var timeout;
+		var pollStart_promise;
 		
 		var resource = {
 			error: false,
@@ -13,7 +14,7 @@ angular.module('pioupiou.services', [])
 				$timeout.cancel(timeout);
 			},
 			pollStart : function(delay){
-				return $http({
+				pollStart_promise = $http({
 					method : 'GET',
 					url : url
 				}).then(
@@ -27,6 +28,11 @@ angular.module('pioupiou.services', [])
 						timeout = $timeout(function(){resource.pollStart(1000)}, 1000);
 					}
 				);
+
+				return pollStart_promise;
+			}, 
+			withData : function(fct){
+				pollStart_promise.then(fct);
 			}
 		};
 			
@@ -50,7 +56,15 @@ angular.module('pioupiou.services', [])
 
 .factory('pioupious', ['resource', function(resource) {
 	
-	return resource('http://api.pioupiou.fr/v1/live/all');
+	var pioupious = resource('http://api.pioupiou.fr/v1/live/all');
+
+	pioupious.getPioupiou = function(id){
+		return _.find(pioupious.data, function(pioupiou){
+			return pioupiou.id == id;
+		});
+	};
+
+	return pioupious;
 }])
 
 .factory('bookmarks', [function() {

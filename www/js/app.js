@@ -55,7 +55,7 @@ angular.module('pioupiou', ['ionic', 'pioupiou.controllers', 'pioupiou.filters',
 				}
 			}
 		}).state('app.map', {
-      url: '/map',
+      url: '/map?pioupiou_id',
       views: {
         'menuContent': {
           templateUrl: 'templates/map.html',

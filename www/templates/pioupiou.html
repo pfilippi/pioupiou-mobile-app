@@ -70,6 +70,11 @@
 					ng-if="bookmarks.bookmarks[pioupiou.data.id]">
 			  Retirer des favoris
 			</button>
+			<a class="button button-block button-positive"
+			   href="#/app/map?pioupiou_id={{pioupiou.data.id}}"
+			   ng-if="show_see_on_map_link">
+			  Voir sur la carte
+			</a>
 		</div>	
 	</ion-content>
 </ion-view>

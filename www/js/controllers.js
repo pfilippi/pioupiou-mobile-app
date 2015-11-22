@@ -1,12 +1,19 @@
 angular.module('pioupiou.controllers', [])
 
-.controller('AppCtrl',['$scope', 'bookmarks', 'pioupious', function($scope, bookmarks, pioupious) {
+.controller('AppCtrl',[
+	'$scope', 
+	'bookmarks', 
+	'pioupious', 
+	function(
+		$scope, 
+		bookmarks, 
+		pioupious) {
 	
 	$scope.bookmarks = bookmarks;
 
 	$scope.pioupious = pioupious;
 	$scope.pioupious.pollStart(10000);
-	
+
 	$scope.speed_unit = 'km/h';
 		
 	$scope.toggleSpeedUnit = function(){
@@ -27,12 +34,32 @@ angular.module('pioupiou.controllers', [])
 		return (item.meta.name.indexOf($scope.search.str) >= 0) || (item.id == $scope.search.str);
 	};
 }])
-.controller('pioupiouCtrl', 
-		   ['$scope', '$stateParams', 'pioupiou', 'pioupiouLastHour',  '$timeout',
-		   function($scope, $stateParams, pioupiou, pioupiouLastHour, $timeout) {
+.controller('pioupiouCtrl', [
+	'$scope', 
+	'$stateParams', 
+	'pioupiou', 
+	'pioupiouLastHour',  
+	'$timeout', 
+	'$ionicHistory', 
+	'$rootScope',
+	function(
+		$scope, 
+		$stateParams, 
+		pioupiou, 
+		pioupiouLastHour, 
+		$timeout, 
+		$ionicHistory, 
+		$rootScope) {
 	
 	$scope.pioupiou = pioupiou($stateParams.id);
 	$scope.pioupiou.pollStart(5000);
+
+	$scope.pioupiou.withData(function(){
+		$scope.show_see_on_map_link = $scope.pioupiou.data.location.success;
+		if($ionicHistory.viewHistory().backView){
+			$scope.show_see_on_map_link = $scope.show_see_on_map_link && $ionicHistory.viewHistory().backView.stateId.indexOf('map') == -1;
+		}
+	});
 
 	$scope.last_hour = pioupiouLastHour($stateParams.id);
 	$scope.last_hour.pollStart(5000);
@@ -55,15 +82,24 @@ angular.module('pioupiou.controllers', [])
 		return $scope.last_hour.data[$scope.selected_measurement.index];
 	};
 
-	$scope.$on('$destroy', function(){
+	$scope.$on('$ionicView.leave', function(){
 		$scope.pioupiou.pollCancel();
-		$scope.last_hour.pollCancel();
+		$scope.last_hour.pollCancel();	
 	});
 	
-}]).controller('mapCtrl', ['$scope', 'pioupious', 'geolocation', function($scope, pioupious, geolocation) {
+}]).controller('mapCtrl', [
+	'$scope', 
+	'pioupious', 
+	'geolocation', 
+	'$stateParams', 
+	function(
+		$scope, 
+		pioupious, 
+		geolocation, 
+		$stateParams) {
 
 	$scope.tiles = {
-		url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+		url: 'http://pioupiou.fr/tiles/{z}/{x}/{y}.png'
     };
 
 	$scope.center = {
@@ -72,18 +108,31 @@ angular.module('pioupiou.controllers', [])
         zoom: 5
     };
 
-	geolocation.getLocation().then(function(data){
-		$scope.center.lat = data.coords.latitude;
-		$scope.center.lng = data.coords.longitude;
-		$scope.center.zoom = 9;
-    });
-
     $scope.defaults = {
     	zoomControl : false
     };
 
-   	pioupious.pollStart(10000).then(function(){
-		$scope.markers = pioupious.data;
+   	pioupious.withData(function(){
+		
+		if($stateParams.pioupiou_id){
+			var pioupiou = pioupious.getPioupiou($stateParams.pioupiou_id);
+			
+			pioupiou.open_marker_popup = true;
+
+			$scope.center = {
+		        lat: pioupiou.location.latitude,
+		        lng: pioupiou.location.longitude, //center of France
+		        zoom: 13
+		    };
+	    } else {
+			geolocation.getLocation().then(function(data){
+				$scope.center.lat = data.coords.latitude;
+				$scope.center.lng = data.coords.longitude;
+				$scope.center.zoom = 9;
+		    });
+	    }
+
+	    $scope.markers = pioupious.data;
 	});
 
 }]);
