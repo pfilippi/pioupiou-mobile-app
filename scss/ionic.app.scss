@@ -20,3 +20,10 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 // Include all of Ionic
 @import "www/lib/ionic/scss/ionic";
 
+#wind-jauge-canvas-center, #wind-jauge-canvas-arrow{
+	fill: $positive;
+	stroke : $positive;
+}
+circle[id*='wind-jauge-canvas-graduation']{
+	stroke : #D8D8D8;
+}

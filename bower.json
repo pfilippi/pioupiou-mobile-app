@@ -9,6 +9,7 @@
     "angularjs-geolocation": "~0.1.1",
     "leaflet": "~0.7.7",
     "angular-leaflet-directive": "~0.10.0",
-    "leaflet.markercluster": "~0.4.0"
+    "leaflet.markercluster": "~0.4.0",
+    "raphael": "~2.1.4"
   }
 }

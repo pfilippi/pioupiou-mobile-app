@@ -8,15 +8,8 @@
 
 				<h2>{{pioupiou.meta.name}}</h2>
 				<p>
-					<span ng-show="pioupiou.status.state == 'on'"
-						  class="balanced">
-						En ligne
-					</span>
-					<span ng-show="pioupiou.status.state == 'off'"
-						  class="assertive">
-						Hors ligne
-					</span> - 
-					{{pioupiou.measurements.wind_heading | windDirectionDegreesToText}} - {{convertSpeed(pioupiou.measurements.wind_speed_avg) | number:0}} {{speed_unit}}
+					<pioupiou-status status="pioupiou.status"></pioupiou-status> - 
+					{{pioupiou.measurements.wind_heading | windDirectionDegreesToText}} - {{speed.convert(pioupiou.measurements.wind_speed_avg) | number:0}} {{speed.unit}}
 				</p>
 				<a class="icon ion-close" ng-click="bookmarks.remove(pioupiou.id)"></a>
 			</ion-item>

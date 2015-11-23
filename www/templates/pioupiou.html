@@ -13,33 +13,24 @@
 			    	<h2>{{pioupiou.data.meta.name}}</h2>
 			    	<p>n° {{pioupiou.data.id}}</p>
 					<p>
-						<span ng-if="pioupiou.data.status.state == 'on'" 
-							  class="balanced">
-							En ligne
-						</span>
-						<span ng-if="pioupiou.data.status.state == 'off'" 
-							  class="assertive">
-							Hors ligne
-						</span>	
+						<pioupiou-status status="pioupiou.data.status"></pioupiou-status>
 						à {{pioupiou.data.measurements.date | date:'shortTime'}}
 					</p>
 			  	</div>
 				<div class="text-center" 
 					 ng-if="last_hour.data">
-					<img src="img/arrow.png" 
-						 width="130" 
-						 height="129" 
-						 alt="Arrow" 
-						 style="transform: rotate({getCurrentMeasurement()[6]}}deg); -webkit-transform: rotate({{getCurrentMeasurement()[6]}}deg); margin:30px">
+					 
+					 <wind-jauge-canvas direction="getCurrentMeasurement()[6]" speed="getCurrentMeasurement()[4]" unit="speed.unit" style="width:280px;height:280px;"></wind-jauge-canvas>
+
 					<div id="name" 
-						 ng-click="toggleSpeedUnit()">
-						<h3>
-							{{getCurrentMeasurement()[6] | windDirectionDegreesToText}} - {{convertSpeed(getCurrentMeasurement()[4]) | number:0}} {{speed_unit}}
-						</h3>
+						 ng-click="speed.toggleUnit()">
 						<h4>
-							Mini : {{convertSpeed(getCurrentMeasurement()[3]) | number:0}} {{speed_unit}} - Maxi {{convertSpeed(getCurrentMeasurement()[5]) | number:0}} {{speed_unit}}
+							{{getCurrentMeasurement()[6] | windDirectionDegreesToText}} - {{speed.convert(getCurrentMeasurement()[4]) | number:0}} {{speed_unit}}
 						</h4>
-						<p>Relevé de {{getCurrentMeasurement()[0] | date:'shortTime'}}</p>
+						<h5>
+							Mini : {{speed.convert(getCurrentMeasurement()[3]) | number:0}} {{speed.unit}} - Maxi {{speed.convert(getCurrentMeasurement()[5]) | number:0}} {{speed.unit}}
+						</h5>
+						Relevé de {{getCurrentMeasurement()[0] | date:'shortTime'}}
 					</div>
 					<div class="range range-positive">
 						<input type="range" 

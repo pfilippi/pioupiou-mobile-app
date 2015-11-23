@@ -3,26 +3,20 @@ angular.module('pioupiou.controllers', [])
 .controller('AppCtrl',[
 	'$scope', 
 	'bookmarks', 
-	'pioupious', 
+	'pioupious',
+	'speed',
 	function(
 		$scope, 
 		bookmarks, 
-		pioupious) {
+		pioupious,
+		speed) {
 	
 	$scope.bookmarks = bookmarks;
 
 	$scope.pioupious = pioupious;
 	$scope.pioupious.pollStart(10000);
-
-	$scope.speed_unit = 'km/h';
-		
-	$scope.toggleSpeedUnit = function(){
-		$scope.speed_unit = $scope.speed_unit == 'km/h' ? 'nds' : 'km/h';
-	};
 	
-	$scope.convertSpeed = function(km_per_hour_speed){
-		return $scope.speed_unit == 'km/h' ? km_per_hour_speed : km_per_hour_speed / 1.852;
-	};
+	$scope.speed = speed;
 }])
 .controller('searchCtrl', ['$scope', function($scope) {
 
@@ -86,7 +80,7 @@ angular.module('pioupiou.controllers', [])
 		$scope.pioupiou.pollCancel();
 		$scope.last_hour.pollCancel();	
 	});
-	
+
 }]).controller('mapCtrl', [
 	'$scope', 
 	'pioupious', 

@@ -86,6 +86,22 @@ angular.module('pioupiou.services', [])
 		},
 		bookmarks : bookmarks
 	};
+}])
+
+.factory('speed', [function() {
+
+	var speed = {
+		unit : 'km/h',
+		toggleUnit : function(){
+			this.unit = this.unit == 'km/h' ? 'nds' : 'km/h';
+		},
+		convert : function(km_per_hour_speed){
+			var result = this.unit == 'km/h' ? km_per_hour_speed : km_per_hour_speed / 1.852;
+			return Math.round(result);
+		}
+	};
+
+	return speed;
 }]);
 
 
