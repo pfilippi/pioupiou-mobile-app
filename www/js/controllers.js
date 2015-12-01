@@ -85,12 +85,22 @@ angular.module('pioupiou.controllers', [])
 	'$scope', 
 	'pioupious', 
 	'geolocation', 
-	'$stateParams', 
+	'$stateParams',
+	'$rootScope',
+	'$window',
 	function(
 		$scope, 
 		pioupious, 
 		geolocation, 
-		$stateParams) {
+		$stateParams,
+		$rootScope,
+		$window) {
+
+	//Hack to fix leaflet display bug
+    $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
+      if(toState.name.indexOf('map') >= 0) {
+          $window.dispatchEvent(new Event('resize'));
+      }});
 
 	$scope.tiles = {
 		url: 'http://pioupiou.fr/tiles/{z}/{x}/{y}.png'

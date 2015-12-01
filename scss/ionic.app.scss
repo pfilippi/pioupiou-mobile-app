@@ -24,6 +24,9 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 	fill: $positive;
 	stroke : $positive;
 }
+#wind-jauge-canvas-arrow{
+	stroke-width : 3px;
+}
 circle[id*='wind-jauge-canvas-graduation']{
 	stroke : #D8D8D8;
 }

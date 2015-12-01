@@ -1,0 +1,12 @@
+<div class="text-center">
+	<p>{{pioupiou.meta.name}}<br>
+	<pioupiou-status status="pioupiou.status"></pioupiou-status>
+	</p>
+	<p ng-click="speed.toggleUnit()">
+		{{pioupiou.measurements.wind_heading | windDirectionDegreesToText}} - {{speed.convert(pioupiou.measurements.wind_speed_avg) | number:0}} {{speed.unit}}
+	</p>
+	<a class="button button-positive button-small button-outline button-block"
+	   href="#/app/pioupiou/{{pioupiou.id}}">
+	  Détails
+	</a>
+</div>

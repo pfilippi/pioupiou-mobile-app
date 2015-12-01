@@ -20,12 +20,12 @@
 				<div class="text-center" 
 					 ng-if="last_hour.data">
 					 
-					 <wind-jauge-canvas direction="getCurrentMeasurement()[6]" speed="getCurrentMeasurement()[4]" unit="speed.unit" style="width:280px;height:280px;"></wind-jauge-canvas>
+					 <wind-jauge-canvas direction="getCurrentMeasurement()[6]" speed="getCurrentMeasurement()[4]" unit="speed.unit" style="width:100%;height:280px;"></wind-jauge-canvas>
 
 					<div id="name" 
 						 ng-click="speed.toggleUnit()">
 						<h4>
-							{{getCurrentMeasurement()[6] | windDirectionDegreesToText}} - {{speed.convert(getCurrentMeasurement()[4]) | number:0}} {{speed_unit}}
+							{{getCurrentMeasurement()[6] | windDirectionDegreesToText}} - {{speed.convert(getCurrentMeasurement()[4]) | number:0}} {{speed.unit}}
 						</h4>
 						<h5>
 							Mini : {{speed.convert(getCurrentMeasurement()[3]) | number:0}} {{speed.unit}} - Maxi {{speed.convert(getCurrentMeasurement()[5]) | number:0}} {{speed.unit}}

@@ -1,6 +1,20 @@
 angular.module('pioupiou.directives', ['leaflet-directive'])
 
-.directive('pioupiouClusteredMarkers', ['leafletData', '$parse', '$timeout', function(leafletData, $parse, $timeout) {
+.directive('pioupiouMapPopup', ['speed', function(speed) {
+	return {
+		restrict : 'E',
+		templateUrl : 'templates/directives/pioupiouMapPopup.html',
+		scope : {
+			pioupiou : '='
+		},
+		link : function(scope){
+			scope.speed = speed;
+		}
+	};
+}])
+
+.directive('pioupiouClusteredMarkers', ['leafletData', '$parse', '$timeout', '$compile', function(leafletData, $parse, $timeout, $compile) {
+	
 	return {
 		restrict : 'A',
 		link : function(scope, element, attrs, ctrl){
@@ -15,9 +29,23 @@ angular.module('pioupiou.directives', ['leaflet-directive'])
 
 				_.each(pioupious, function(pioupiou){
 					var marker = L.marker([pioupiou.location.latitude, pioupiou.location.longitude]);
+
+					marker.bindPopup(L.popup({minWidth : 80, closeButton : false}));
 					
-					marker.bindPopup('<a href="#/app/pioupiou/'+pioupiou.id+'">'+pioupiou.meta.name+'</a>');
-					
+					//For performance reasons, build popup content only when it is open
+					marker.on('popupopen', function(){
+
+						var link = $compile('<pioupiou-map-popup pioupiou="pioupiou"></pioupiou-map-popup>');
+
+						var newScope = scope.$new();
+
+						newScope.pioupiou = pioupiou;
+
+						marker.getPopup().setContent(link(newScope)[0]).update();
+						
+						marker.off('popupopen');//Dont need to to that every time though
+					});
+
 					if(pioupiou.open_marker_popup){
 						$timeout(function(){
 							marker.openPopup();
@@ -26,7 +54,7 @@ angular.module('pioupiou.directives', ['leaflet-directive'])
 	
 	 				markers.addLayer(marker);
 				});
-			})
+			});
 		 	
 		 	$timeout(function(){
 	            leafletData.getMap(attrs.id).then(function(map) {
@@ -47,7 +75,12 @@ angular.module('pioupiou.directives', ['leaflet-directive'])
 	};
 }])
 
-.directive('windJaugeCanvas', ['speed', function(speed) {
+.directive('windJaugeCanvas', ['speed', '$window', function(speed, $window) {
+
+	var html_id_prefix = 'wind-jauge-canvas-';
+
+	var scale = 4;
+
 	return {
 		restrict : 'E',
 		replace : true,
@@ -59,43 +92,55 @@ angular.module('pioupiou.directives', ['leaflet-directive'])
 		},
 		link : function(scope, element, attrs, ctrl){
 
-			var html_id_prefix = 'wind-jauge-canvas-';
+			paper = Raphael(element[0], '100%', '100%');
 
-			var scale = 4;
+		    angular.element($window).bind('resize', function() {
+		    	buildEverything();
+		    });
 
-			var paper = Raphael(element[0], '100%', '100%');
+			var stopWatchingDirection = function(){};
 
-			var center = {
-				x : paper.canvas.offsetWidth / 2,
-				y : paper.canvas.offsetHeight / 2
-			};
+		    buildEverything();
 
-			paper.circle(center.x, center.y).attr({"stroke-width": 1}).animate({r: 10 * scale}, 300).node.id = html_id_prefix + 'graduation-1';
-			paper.circle(center.x, center.y).attr({"stroke-width": 1}).animate({r: 20 * scale}, 300).node.id = html_id_prefix + 'graduation-2';
-			paper.circle(center.x, center.y).attr({"stroke-width": 1}).animate({r: 30 * scale}, 300).node.id = html_id_prefix + 'graduation-3';
+		    function buildEverything(){
 
-			paper.circle(center.x, center.y).attr({stroke : 0}).animate({r: 5}, 300).node.id = html_id_prefix + 'center';
+		    	paper.clear();
+		    	stopWatchingDirection();
 
-			scope.$watchGroup(['direction', 'speed'], function(){
-				if(scope.direction !== undefined && scope.speed !== undefined){
-					drawArrow();
-				}
-			});
+				var center = {
+					x : paper.canvas.offsetWidth / 2,
+					y : paper.canvas.offsetHeight / 2
+				};
 
-			var arrow;
+				paper.circle(center.x, center.y).animate({r: 10 * scale}, 300).node.id = html_id_prefix + 'graduation-1';
+				paper.circle(center.x, center.y).animate({r: 20 * scale}, 300).node.id = html_id_prefix + 'graduation-2';
+				paper.circle(center.x, center.y).animate({r: 30 * scale}, 300).node.id = html_id_prefix + 'graduation-3';
 
-			function drawArrow(){
+				paper.circle(center.x, center.y).animate({r: 5}, 300).node.id = html_id_prefix + 'center';
 
-				var x = center.x - Math.sin(scope.direction * Math.PI / 180) * scope.speed * scale;
-				var y = center.y + Math.cos(scope.direction * Math.PI / 180) * scope.speed * scale;
+				stopWatchingDirection = scope.$watchGroup(['direction', 'speed'], function(){
+					if(scope.direction !== undefined && scope.speed !== undefined){
+						drawArrow();
+					}
+				});
 
-				if(arrow)arrow.remove();
-				arrow = paper.path('M'+center.x+','+center.y+' L'+x+','+y).attr({'stroke-width' : 3, 'stroke' : '#346bbf'}); //Need to put stroke color here otherwize marker won't be colored. Dam.
-				arrow.node.id = html_id_prefix + 'arrow';
-				if(scope.speed >= 2){
-					arrow.attr({ 'arrow-end':'classic-wide-long'});
-				}
-			};
+				var arrow;
+
+				drawArrow();
+
+				function drawArrow(){
+
+					var x = center.x - Math.sin(scope.direction * Math.PI / 180) * scope.speed * scale;
+					var y = center.y + Math.cos(scope.direction * Math.PI / 180) * scope.speed * scale;
+
+					if(arrow)arrow.remove();
+					arrow = paper.path('M'+center.x+','+center.y+' L'+x+','+y).attr({'stroke' : '#346bbf'}); //Need to put stroke color here otherwize marker won't be colored. Dam.
+					arrow.node.id = html_id_prefix + 'arrow';
+					if(scope.speed >= 2){
+						arrow.attr({'arrow-end':'classic-wide-long'});
+					}
+				};
+		    };
 		}
 	};
 }]);
